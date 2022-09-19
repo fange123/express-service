@@ -2,7 +2,7 @@ const express = require("express");
 //* boom是用来处理异常错误的
 const boom = require("boom");
 const userRouter = require("./user");
-const CODE_ERROR = require("../utils/constant");
+const { CODE_ERROR } = require("../utils/constant");
 
 //* 注册路由
 const router = express.Router();

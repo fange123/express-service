@@ -1,16 +1,25 @@
 const express = require("express");
 const Result = require("../models/result");
+const { login } = require("../services/user");
+const { md5 }  = require("../utils");
+const PWD_SALE  = require("../utils/constant")
 
 const router = express.Router();
 
 //* 创建登录路由
-router.post('/login', function(req, res){
+router.post('/login', function(req, result){
   const {username,password} = req.body
-  if(username === 'admin' && password === '123456'){
-    new Result('登录成功').success(res)
+  const md5Password = md5(`${password}${PWD_SALE}`)
+  login(username,md5Password).then(res=> {
+     if(!res || res.length === 0){
+      new Result('登录失败').fail(result)
   }else{
-  new Result('登录失败').fail(res)
+    new Result('登录成功').success(result)
+
   }
+  })
+
+
 
 })
 
