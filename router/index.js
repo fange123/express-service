@@ -2,10 +2,15 @@ const express = require("express");
 //* boom是用来处理异常错误的
 const boom = require("boom");
 const userRouter = require("./user");
-const { CODE_ERROR } = require("../utils/constant");
+const jwtAuth = require("./jwt")
+const Result = require("../models/result")
 
 //* 注册路由
 const router = express.Router();
+
+//* 引入jwt认证
+router.use(jwtAuth)
+
 router.get("/", (req, res) => {
   res.send("成功");
 });
@@ -29,17 +34,27 @@ router.use((req, res, next) => {
  * 第二，方法的必须放在路由最后
  */
 router.use((err, req, res, next) => {
-  const msg = (err && err.message) || "系统错误";
+  //* 如果token失效
+  if(err.code && err.code === 'credentials_required'){
+    const { status = 401 ,inner: { message }} = err
+    new Result(null,'Token失效',{
+      error: status,
+      errMsg:message
+    }).jwtError(res.status(status))//res.status()设置http状态吗
+
+  }else {
+    const msg = (err && err.message) || "系统错误";
   const statusCode = (err.output && err.output.statusCode) || 500;
   const errorMsg =
     (err.output && err.output.payload && err.output.payload.error) ||
     err.message;
-  res.status(statusCode).json({
-    code: CODE_ERROR,
-    msg,
-    error: statusCode,
-    errorMsg,
-  });
+    new Result(null,msg,{
+      error:statusCode,
+      errorMsg
+    }).fail(res.status(statusCode))
+
+  }
+
 });
 
 module.exports = router;
