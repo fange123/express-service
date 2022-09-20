@@ -1,7 +1,7 @@
 const express = require("express");
 const Result = require("../models/result");
-const { login } = require("../services/user");
-const { md5 }  = require("../utils");
+const { login,findUser } = require("../services/user");
+const { md5,decoded }  = require("../utils");
 const { PWD_SALE ,PRIVATE_KEY,JWT_EXPIRED}  = require("../utils/constant")
 const boom = require("boom")
 const { body,validationResult } = require("express-validator")
@@ -42,7 +42,24 @@ router.post('/login',[
 })
 
 router.get("/info", (req, res) => {
-  res.send("info...");
+  // * 需要动态的从token中获取用户名
+  // * jwt的解析---jsonwebtoken的方法verify
+  const decode = decoded(req)
+  if(decode && decode.username){
+    findUser(decode.username).then(user=> {
+    if(user){
+      //处理一下role的返回格式
+      user.roles = [user.role]
+      new Result(user,'用户信息查询成功').success(res)
+    }else{
+      new Result('用户信息查询失败').fail(res)
+    }
+  })
+  }else{
+    new Result('用户信息查询失败').fail(res)
+  }
+
+
 });
 
 module.exports = router;
