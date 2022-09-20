@@ -62,4 +62,15 @@ router.get("/info", (req, res) => {
 
 });
 
+//* 写死一个权限路由
+router.get('/buttons',(req,res)=> {
+   const decode = decoded(req)
+  if(decode && decode.username){
+    new Result(['admin','test'],'用户权限查询成功').success(res)
+  }else{
+    new Result('用户权限查询失败').fail(res)
+  }
+
+})
+
 module.exports = router;

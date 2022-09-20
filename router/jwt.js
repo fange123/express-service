@@ -1,5 +1,5 @@
-const { expressjwt } = require("express-jwt")
 //!: express-jwt用来检测路由中是否带有未失效的token，也可添加无需见的路由白名单
+const { expressjwt } = require("express-jwt")
 const { PRIVATE_KEY } = require('../utils/constant')
 
 const jwtAuth = expressjwt({
