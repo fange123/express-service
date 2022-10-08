@@ -2,6 +2,7 @@ const express = require("express");
 //* boom是用来处理异常错误的
 const boom = require("boom");
 const userRouter = require("./user");
+const bookRouter = require("./book")
 const jwtAuth = require("./jwt")
 const Result = require("../models/result")
 
@@ -17,6 +18,7 @@ router.get("/", (req, res) => {
 
 // 通过 userRouter 来处理 /user 路由
 router.use("/user", userRouter);
+router.use('/book', bookRouter);
 
 /**
  * 集中处理404请求的中间件
